@@ -25,7 +25,7 @@ interface ProfileData {
 export default function ProfilePage() {
   const params = useParams();
   const { publicKey } = useWallet();
-  const walletAddress = params.wallet as string;
+  const walletAddress = params?.wallet as string;
   
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);

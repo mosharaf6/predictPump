@@ -29,7 +29,7 @@ import {
 export default function MarketDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const marketId = params.id as string;
+  const marketId = params?.id as string;
   
   const [market, setMarket] = useState<Market | null>(null);
   const [loading, setLoading] = useState(true);

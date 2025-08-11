@@ -3,13 +3,13 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-prediction_pump = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+prediction_pump = "2vi9hVuYBws8GwFqPG6eRQRFoEMGfkCny2Lbvf3pFuzu"
 
 [programs.devnet]
-prediction_pump = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+prediction_pump = "2vi9hVuYBws8GwFqPG6eRQRFoEMGfkCny2Lbvf3pFuzu"
 
 [programs.mainnet]
-prediction_pump = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+prediction_pump = "2vi9hVuYBws8GwFqPG6eRQRFoEMGfkCny2Lbvf3pFuzu"
 
 [registry]
 url = "https://api.apr.dev"

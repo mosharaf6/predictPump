@@ -11,7 +11,7 @@ pub use bonding_curve::*;
 #[cfg(test)]
 pub mod tests;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("2vi9hVuYBws8GwFqPG6eRQRFoEMGfkCny2Lbvf3pFuzu");
 
 // Constants for market configuration
 pub const MINIMUM_LIQUIDITY_THRESHOLD: u64 = 1_000_000; // 0.001 SOL in lamports
