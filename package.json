@@ -1,0 +1,32 @@
+{
+  "name": "prediction-pump",
+  "version": "1.0.0",
+  "description": "Decentralized prediction markets with viral mechanics",
+  "main": "index.js",
+  "scripts": {
+    "anchor-build": "anchor build",
+    "anchor-test": "anchor test",
+    "frontend-dev": "cd frontend && npm run dev",
+    "frontend-build": "cd frontend && npm run build",
+    "backend-dev": "cd backend && npm run dev",
+    "backend-build": "cd backend && npm run build",
+    "test": "npm run anchor-test && cd frontend && npm run test && cd ../backend && npm run test",
+    "lint": "cd frontend && npm run lint && cd ../backend && npm run lint",
+    "format": "cd frontend && npx prettier --write . && cd ../backend && npx prettier --write .",
+    "docker-up": "docker compose up -d",
+    "docker-down": "docker compose down",
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "dev-local": "echo 'Starting local development without Docker...' && echo 'Run these commands in separate terminals:' && echo '1. npm run frontend-dev' && echo '2. npm run backend-dev' && echo '3. For database: install PostgreSQL locally or use a cloud service'"
+  },
+  "keywords": ["solana", "prediction-markets", "defi", "anchor"],
+  "author": "PredictionPump Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@types/mocha": "^9.0.0",
+    "chai": "^4.3.4",
+    "mocha": "^9.0.3",
+    "ts-mocha": "^10.0.0",
+    "typescript": "^4.3.5"
+  }
+}

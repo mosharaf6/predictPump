@@ -1,0 +1,108 @@
+name: Deploy Solana Program
+
+on:
+  push:
+    branches: [main]
+    paths: ['programs/**']
+  workflow_dispatch:
+    inputs:
+      cluster:
+        description: 'Solana cluster to deploy to'
+        required: true
+        default: 'devnet'
+        type: choice
+        options:
+          - devnet
+          - mainnet-beta
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Cache Solana CLI
+        uses: actions/cache@v3
+        with:
+          path: ~/.local/share/solana
+          key: solana-${{ runner.os }}-v1.17.0
+          
+      - name: Install Solana CLI
+        run: |
+          if [ ! -d ~/.local/share/solana ]; then
+            sh -c "$(curl -sSfL https://release.solana.com/v1.17.0/install)"
+          fi
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+          
+      - name: Install Anchor CLI
+        run: |
+          npm install -g @coral-xyz/anchor-cli
+          
+      - name: Setup Solana Keypair
+        run: |
+          mkdir -p ~/.config/solana
+          echo "${{ secrets.SOLANA_PRIVATE_KEY }}" > ~/.config/solana/id.json
+          chmod 600 ~/.config/solana/id.json
+          solana config set --keypair ~/.config/solana/id.json
+          
+      - name: Set Solana Cluster
+        run: |
+          CLUSTER="${{ github.event.inputs.cluster || 'devnet' }}"
+          solana config set --url $CLUSTER
+          echo "Deploying to cluster: $CLUSTER"
+          
+      - name: Check Solana Balance
+        run: |
+          solana balance
+          
+      - name: Install Dependencies
+        run: |
+          if [ -f "package.json" ]; then
+            npm install
+          fi
+          
+      - name: Build Program
+        run: |
+          anchor build
+          
+      - name: Get Program ID
+        id: program-id
+        run: |
+          PROGRAM_ID=$(solana address -k target/deploy/prediction_pump-keypair.json)
+          echo "program_id=$PROGRAM_ID" >> $GITHUB_OUTPUT
+          echo "Program ID: $PROGRAM_ID"
+          
+      - name: Deploy Program
+        run: |
+          CLUSTER="${{ github.event.inputs.cluster || 'devnet' }}"
+          anchor deploy --provider.cluster $CLUSTER
+          
+      - name: Verify Deployment
+        run: |
+          CLUSTER="${{ github.event.inputs.cluster || 'devnet' }}"
+          PROGRAM_ID="${{ steps.program-id.outputs.program_id }}"
+          solana program show $PROGRAM_ID --url $CLUSTER
+          
+      - name: Run Tests
+        run: |
+          CLUSTER="${{ github.event.inputs.cluster || 'devnet' }}"
+          if [ "$CLUSTER" = "devnet" ]; then
+            anchor test --provider.cluster devnet --skip-local-validator
+          fi
+          
+      - name: Create Deployment Summary
+        run: |
+          CLUSTER="${{ github.event.inputs.cluster || 'devnet' }}"
+          PROGRAM_ID="${{ steps.program-id.outputs.program_id }}"
+          echo "## Solana Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Cluster**: $CLUSTER" >> $GITHUB_STEP_SUMMARY
+          echo "- **Program ID**: \`$PROGRAM_ID\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Explorer**: [View on Solana Explorer](https://explorer.solana.com/address/$PROGRAM_ID?cluster=$CLUSTER)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployment Time**: $(date)" >> $GITHUB_STEP_SUMMARY
